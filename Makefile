@@ -1,8 +1,9 @@
 # Define Shell
 SHELL = /bin/sh
+app = pulse
 cmd_dir = cmd/pulse/main.go
 frontend_dir = client
-cmd_out = pulse
+cmd_out = bin
 
 .PHONY: help
 help: ## Display help screen
@@ -19,11 +20,11 @@ client: dev ## Build client
 
 .PHONY: build
 build: client ## Build pulse command
-		go build -o $(cmd_out) $(cmd_dir)
+		go build -o $(cmd_out)/$(app) $(cmd_dir)
 
 .PHONY: clean
 clean: ## Remove all the build files
 		rm -r $(frontend_dir)/out/
-		rm $(cmd_out)
+		rm -r $(cmd_out)
 
 

@@ -1,7 +1,7 @@
 client/out
 client/.next
 client/node_modules
-pulse
+bin
 
 # Binaries for programs and plugins
 *.exe
