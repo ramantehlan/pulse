@@ -1,5 +1,8 @@
 client/out
+client/.next
+client/node_modules
 pulse
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
