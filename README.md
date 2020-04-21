@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/29037312/79879811-cfdc0b80-840c-11ea-8fde-5c59b49d1d6b.png" width="80px">
-  <h3 align="center">Pulse</h3>
-  Check Pulse In Real Time
+  <img src="https://user-images.githubusercontent.com/29037312/79879805-cc488480-840c-11ea-8d79-737f9b22167d.png">
+  <h1 align="center">Pulse</h1>
 </p>
+Check Pulse In Real Time
 
 # Development
 
