@@ -1,0 +1,24 @@
+{
+  "name": "@ramantehlan/pulse",
+  "version": "1.0.0",
+  "description": "Analyse your pulse",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/ramantehlan/pulse.git"
+  },
+  "keywords": [
+    "pulse",
+    "smart-band",
+    "cli"
+  ],
+  "author": "Raman Tehlan <ramantehlan@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ramantehlan/pulse/issues"
+  },
+  "homepage": "https://github.com/ramantehlan/pulse#readme"
+}
