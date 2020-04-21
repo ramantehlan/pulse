@@ -1,0 +1,21 @@
+name: pulse
+version: '1.0'
+summary: Analyse your pulse
+description: |
+  About Pulse
+
+confinement: devmode
+base: core18
+
+parts:
+  pulse:
+    plugin: go
+    go-importpath: github.com/ramantehlan/pulse
+    source: https://github.com/ramantehlan/pulse
+    source-type: git
+    build-packages:
+      - gcc
+
+apps:
+  pulse:
+    command: pulse
