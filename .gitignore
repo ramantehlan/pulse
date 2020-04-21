@@ -1,5 +1,5 @@
-ref.txt
-
+client/out
+pulse
 # Binaries for programs and plugins
 *.exe
 *.exe~
