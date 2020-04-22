@@ -6,6 +6,11 @@ import (
 	"github.com/paypal/gatt"
 )
 
+const (
+	// Port for the client server.
+	Port = ":8000"
+)
+
 // Function to handle when devices are discovered
 func onDiscovered(p gatt.Peripheral, a *gatt.Advertisement, rssi int) {
 
@@ -30,6 +35,7 @@ func onStateChanged(d gatt.Device, s gatt.State) {
 }
 
 func main() {
-	go startClient()
-	searchDevices(onDiscovered, onStateChanged)
+
+	startClient()
+	//searchDevices(onDiscovered, onStateChanged)
 }
