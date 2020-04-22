@@ -8,7 +8,8 @@ import (
 	"github.com/googollee/go-socket.io"
 )
 
-func startSocket() {
+// Function to start socket server
+func serveSocket() {
 	server, err := socketio.NewServer(nil)
 	if err != nil {
 		log.Fatal(err)

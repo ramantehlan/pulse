@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 )
 
@@ -13,7 +14,7 @@ const (
 	ClientPage = "../../client/out/index.html"
 )
 
-// serveStatic is to load the clientPage
+// Function to load the clientPage
 func serveStatic(w http.ResponseWriter, r *http.Request) {
 	t, err := template.ParseFiles(ClientPage)
 	if err != nil {
@@ -22,8 +23,13 @@ func serveStatic(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, nil)
 }
 
-// StartClient is to start the client server.
+// Function to start the client server.
 func startClient() {
+	socket = serveSocket()
+	go socket.Serve()
+	defer socket.Close()
+
+	http.Handle("/socket.io/", socket)
 	http.HandleFunc("/", serveStatic)
-	http.ListenAndServe(Port, nil)
+	log.Fatal(http.ListenAndServe(Port, nil))
 }
