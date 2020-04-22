@@ -1,7 +1,8 @@
 # Define Shell
 SHELL = /bin/sh
+PWD = $(shell pwd)
 app = pulse
-cmd_dir = cmd/pulse/main.go
+cmd_dir = cmd/pulse/
 frontend_dir = client
 cmd_out = bin
 
@@ -11,20 +12,30 @@ help: ## Display help screen
 
 .PHONY: dev
 dev: ## Setup dev environment
-		yarn --cwd ./$(frontend_dir) install
+		yarn --cwd $(PWD)/$(frontend_dir) install
 
 .PHONY: client
 client: dev ## Build client
-		yarn --cwd ./$(frontend_dir) build
-		yarn --cwd ./$(frontend_dir) export
+		yarn --cwd $(PWD)/$(frontend_dir) build
+		yarn --cwd $(PWD)/$(frontend_dir) export -o $(PWD)/$(cmd_out)/template
 
+.PHONY: pkger
+pkger: client ## Compile client files
+		cd $(PWD)/$(cmd_dir)
+		rm pkged.go
+		pkger
+		cd $(PWD)
+
+# Remove pkger to stop recompiling of client files
 .PHONY: build
 build: client ## Build pulse command
-		go build -o $(cmd_out)/$(app) $(cmd_dir)
+		go build -o $(PWD)/$(cmd_out)/$(app) $(PWD)/$(cmd_dir)
+
+.PHONY: install
+install: build ## Build and install pulse command
+		go install $(PWD)/$(cmd_dir)
 
 .PHONY: clean
 clean: ## Remove all the build files
-		rm -r $(frontend_dir)/out/
-		rm -r $(cmd_out)
-
+		rm -r $(PWD)/$(cmd_out)
 
