@@ -2,7 +2,7 @@
 SHELL = /bin/sh
 PWD = $(shell pwd)
 app = pulse
-cmd_dir = cmd/pulse/
+cmd_dir = cmd/pulse
 frontend_dir = client
 cmd_out = bin
 
@@ -19,16 +19,16 @@ client: dev ## Build client
 		yarn --cwd $(PWD)/$(frontend_dir) build
 		yarn --cwd $(PWD)/$(frontend_dir) export -o $(PWD)/$(cmd_out)/template
 
+# pkger 
 .PHONY: pkger
 pkger: client ## Compile client files
-		cd $(PWD)/$(cmd_dir)
-		rm pkged.go
+	  rm -f $(PWD)/$(cmd_dir)/pkged.go
 		pkger
-		cd $(PWD)
+		mv pkged.go $(PWD)/$(cmd_dir)/pkged.go
 
 # Remove pkger to stop recompiling of client files
 .PHONY: build
-build: client ## Build pulse command
+build: pkger ## Build pulse command
 		go build -o $(PWD)/$(cmd_out)/$(app) $(PWD)/$(cmd_dir)
 
 .PHONY: install
