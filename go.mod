@@ -1,4 +1,4 @@
-module github.com/ramantehlan/pulse/cmd/pulse
+module github.com/ramantehlan/pulse
 
 go 1.14
 
