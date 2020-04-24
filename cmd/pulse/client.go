@@ -1,10 +1,10 @@
-package pulse
+package main
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/markbates/pkger"
+	l "github.com/sirupsen/logrus"
 )
 
 // Function to start the client server.
@@ -13,8 +13,12 @@ func startClient() {
 	defer socket.Close()
 
 	templateDir := pkger.Dir("/bin/template")
+	//templateDir := http.Dir("./bin/template")
 
-	http.Handle("/socket.io/", socket)
 	http.Handle("/", http.FileServer(templateDir))
-	log.Fatal(http.ListenAndServe(Port, nil))
+	http.Handle("/socket.io/", socket)
+	l.Fatal(http.ListenAndServe(Port, nil))
+	l.WithFields(l.Fields{
+		"port": Port,
+	}).Info("Server Running on localhost")
 }

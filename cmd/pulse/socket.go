@@ -1,51 +1,63 @@
-package pulse
+package main
 
 import (
-	"fmt"
-	"log"
-
 	"github.com/googollee/go-socket.io"
+	l "github.com/sirupsen/logrus"
 )
 
 var socket = serveSocket()
+
+// Device is to hold properties of a device
+type Device struct {
+	name string
+	id   string
+}
+
+var m = map[int]Device{
+	0: Device{
+		"mi", "123",
+	},
+	1: Device{
+		"fitbit", "345",
+	},
+}
 
 // Function to start socket server
 func serveSocket() *socketio.Server {
 	server, err := socketio.NewServer(nil)
 	if err != nil {
-		log.Fatal(err)
+		l.Error(err)
 	}
 
 	server.OnConnect("/", func(s socketio.Conn) error {
-		s.SetContext("")
-		fmt.Println("connected:", s.ID())
+		l.WithFields(l.Fields{
+			"SID": s.ID(),
+		}).Info("New connection")
+		s.Join("broadcastDevices")
 		return nil
 	})
 
-	server.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
-		fmt.Println("notice:", msg)
-		s.Emit("reply", "have "+msg)
-	})
-
-	server.OnEvent("/chat", "msg", func(s socketio.Conn, msg string) string {
-		s.SetContext(msg)
-		return "recv " + msg
-	})
-
-	server.OnEvent("/", "bye", func(s socketio.Conn) string {
-		last := s.Context().(string)
-		s.Emit("bye", last)
-		s.Close()
-		return last
-	})
-
 	server.OnError("/", func(s socketio.Conn, e error) {
-		fmt.Println("meet error:", e)
+		l.WithFields(l.Fields{
+			"SID":   s.ID(),
+			"Error": e,
+		}).Error("Error in connection")
 	})
 
 	server.OnDisconnect("/", func(s socketio.Conn, reason string) {
-		fmt.Println("closed", reason)
+		l.WithFields(l.Fields{
+			"SID":    s.ID(),
+			"Reason": reason,
+		}).Warn("Connection lost")
 	})
+
+	// To catch the device selected by the user
+	server.OnEvent("/", "select_device", func(s socketio.Conn, msg string) string {
+		l.Info("Device selected by user: ", msg)
+		return msg
+	})
+
+	// To emit the available devices
 
 	return server
 }

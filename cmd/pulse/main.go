@@ -1,4 +1,4 @@
-package pulse
+package main
 
 import (
 	"fmt"
@@ -8,12 +8,11 @@ import (
 
 const (
 	// Port for the client server.
-	Port = ":8000"
+	Port = ":7000"
 )
 
 // Function to handle when devices are discovered
 func onDiscovered(p gatt.Peripheral, a *gatt.Advertisement, rssi int) {
-
 	fmt.Printf("\nPeripheral ID:%s, NAME:(%s)\n", p.ID(), p.Name())
 	fmt.Println("  Local Name        =", a.LocalName)
 	fmt.Println("  TX Power Level    =", a.TxPowerLevel)
@@ -35,7 +34,7 @@ func onStateChanged(d gatt.Device, s gatt.State) {
 }
 
 func main() {
-
 	startClient()
+	socket.BroadcastToRoom("", "broadcastDevices", "devices_list", "data-list-devices")
 	//searchDevices(onDiscovered, onStateChanged)
 }
