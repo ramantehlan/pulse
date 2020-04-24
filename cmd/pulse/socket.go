@@ -5,7 +5,13 @@ import (
 	l "github.com/sirupsen/logrus"
 )
 
-var socket = serveSocket()
+/**
+* Ideally we should be using server.BroadcastToRoom.
+* But that is not working, so we are using this weird way.
+* Where once the connection is created, we store its instance
+* in a global variable, which is not ideal, but works for now.
+**/
+var socketInstance socketio.Conn
 
 // Device is to hold properties of a device
 type Device struct {
@@ -30,10 +36,12 @@ func serveSocket() *socketio.Server {
 	}
 
 	server.OnConnect("/", func(s socketio.Conn) error {
+		s.SetContext("")
 		l.WithFields(l.Fields{
 			"SID": s.ID(),
+			"URL": s.URL(),
 		}).Info("New connection")
-		s.Join("broadcastDevices")
+		socketInstance = s
 		return nil
 	})
 
@@ -53,11 +61,10 @@ func serveSocket() *socketio.Server {
 
 	// To catch the device selected by the user
 	server.OnEvent("/", "select_device", func(s socketio.Conn, msg string) string {
+		s.SetContext(msg)
 		l.Info("Device selected by user: ", msg)
 		return msg
 	})
-
-	// To emit the available devices
 
 	return server
 }

@@ -31,7 +31,7 @@ pkger: web ## Compile web files using pkger
 
 # Helps in testing cmd
 .PHONY: dev
-dev: web ## Start the development environment
+dev: ## Start the development environment
 	  yarn --cwd $(PWD)/$(web_dir) dev &
 		go run $(PWD)/$(cmd_dir)/
 
@@ -41,7 +41,7 @@ build: pkger ## Build pulse command
 		go build -o $(PWD)/$(cmd_out)/$(app) $(PWD)/$(cmd_dir)
 
 .PHONY: install
-install: pkger ## Build and install pulse command
+install: ## Build and install pulse command
 		go install $(PWD)/$(cmd_dir)
 
 .PHONY: clean
