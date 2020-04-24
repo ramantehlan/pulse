@@ -1,6 +1,6 @@
-client/out
-client/.next
-client/node_modules
+web/out
+web/.next
+web/node_modules
 bin
 
 # Binaries for programs and plugins
