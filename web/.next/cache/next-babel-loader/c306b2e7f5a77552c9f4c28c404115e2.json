@@ -1,0 +1,1 @@
+{"ast":null,"code":"import React from \"react\";\nvar __jsx = React.createElement;\n\n//import { Component } from 'react'\n//import io from \"socket.io-client'\nfunction About() {\n  return __jsx(\"div\", null, \"Welcome to page!\");\n}\n\nexport default About;","map":null,"metadata":{},"sourceType":"module"}
