@@ -1,31 +1,24 @@
 package main
 
 import (
+	"encoding/json"
+	"time"
+
 	"github.com/googollee/go-socket.io"
 	l "github.com/sirupsen/logrus"
 )
 
 /**
 * Ideally we should be using server.BroadcastToRoom.
-* But that is not working, so we are using this weird way.
-* Where once the connection is created, we store its instance
-* in a global variable, which is not ideal, but works for now.
+* But that is not working, so we are using this below logic.
+* Where we keep emiting the state of discovered devices in loop.
 **/
-var socketInstance socketio.Conn
-
-// Device is to hold properties of a device
-type Device struct {
-	name string
-	id   string
-}
-
-var m = map[int]Device{
-	0: Device{
-		"mi", "123",
-	},
-	1: Device{
-		"fitbit", "345",
-	},
+func emitDevices(s socketio.Conn) {
+	for true {
+		jsonState, _ := json.Marshal(deviceState)
+		s.Emit("devices_list", string(jsonState))
+		time.Sleep(5 * time.Second)
+	}
 }
 
 // Function to start socket server
@@ -36,12 +29,11 @@ func serveSocket() *socketio.Server {
 	}
 
 	server.OnConnect("/", func(s socketio.Conn) error {
-		s.SetContext("")
 		l.WithFields(l.Fields{
 			"SID": s.ID(),
 			"URL": s.URL(),
 		}).Info("New connection")
-		socketInstance = s
+		go emitDevices(s)
 		return nil
 	})
 
@@ -60,10 +52,9 @@ func serveSocket() *socketio.Server {
 	})
 
 	// To catch the device selected by the user
-	server.OnEvent("/", "select_device", func(s socketio.Conn, msg string) string {
-		s.SetContext(msg)
+	server.OnEvent("/", "select_device", func(s socketio.Conn, msg string) bool {
 		l.Info("Device selected by user: ", msg)
-		return msg
+		return true
 	})
 
 	return server
