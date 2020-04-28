@@ -14,6 +14,7 @@ help: ## Display help screen
 .PHONY: setup
 setup: ## Setup dev environment
 		yarn --cwd $(PWD)/$(web_dir) install
+		go get ../...
 
 .PHONY: web
 web: ## Build web
