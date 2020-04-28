@@ -2,24 +2,10 @@ package main
 
 import (
 	"encoding/json"
-	"time"
 
 	"github.com/googollee/go-socket.io"
 	l "github.com/sirupsen/logrus"
 )
-
-/**
-* Ideally we should be using server.BroadcastToRoom.
-* But that is not working, so we are using this below logic.
-* Where we keep emiting the state of discovered devices in loop.
-**/
-func emitDevices(s socketio.Conn) {
-	for true {
-		jsonState, _ := json.Marshal(deviceState)
-		s.Emit("devices_list", string(jsonState))
-		time.Sleep(5 * time.Second)
-	}
-}
 
 // Function to start socket server
 func serveSocket() *socketio.Server {
@@ -33,7 +19,6 @@ func serveSocket() *socketio.Server {
 			"SID": s.ID(),
 			"URL": s.URL(),
 		}).Info("New connection")
-		go emitDevices(s)
 		return nil
 	})
 
@@ -51,9 +36,17 @@ func serveSocket() *socketio.Server {
 		}).Warn("Connection lost")
 	})
 
+	// Send te state of devices
+	server.OnEvent("/", "get_devices", func(s socketio.Conn) {
+		jsonState, _ := json.Marshal(deviceState)
+		s.Emit("devices_list", string(jsonState))
+	})
+
 	// To catch the device selected by the user
-	server.OnEvent("/", "select_device", func(s socketio.Conn, msg string) bool {
-		l.Info("Device selected by user: ", msg)
+	server.OnEvent("/", "select_device", func(s socketio.Conn, pID string) bool {
+		l.Info("Device selected by user: ", pID)
+		disconnectActivePeripheral()
+		go connectPeripheral(pID)
 		return true
 	})
 

@@ -1,15 +1,14 @@
 package main
 
 import (
-	"fmt"
-	"log"
-
 	"github.com/paypal/gatt"
 	"github.com/paypal/gatt/examples/option"
 	l "github.com/sirupsen/logrus"
 )
 
-func onDeviceDiscovered(p gatt.Peripheral, a *gatt.Advertisement, rssi int) {
+func onPeripheralDiscovered(p gatt.Peripheral, a *gatt.Advertisement, rssi int) {
+	peripheralState[p.ID()] = p
+	advertisementState[p.ID()] = a
 	deviceState[p.ID()] = DeviceStruct{
 		p.Name(),
 		a.LocalName,
@@ -27,13 +26,14 @@ func onDeviceDiscovered(p gatt.Peripheral, a *gatt.Advertisement, rssi int) {
 }
 
 func onDeviceStateChanged(d gatt.Device, s gatt.State) {
-	fmt.Println("State:", s)
+	l.Info("BT Device Status:", s)
 	switch s {
 	case gatt.StatePoweredOn:
-		fmt.Println("scanning...")
+		l.Info("Starting to scan device...")
 		d.Scan([]gatt.UUID{}, false)
 		return
 	default:
+		l.Error("Permission denied or device not found")
 		d.StopScanning()
 	}
 }
@@ -42,7 +42,7 @@ func onDeviceStateChanged(d gatt.Device, s gatt.State) {
 func searchDevices(onDiscovered func(gatt.Peripheral, *gatt.Advertisement, int), stateChanged func(gatt.Device, gatt.State)) gatt.Device {
 	d, err := gatt.NewDevice(option.DefaultClientOptions...)
 	if err != nil {
-		log.Fatalf("Failed to open device, err: %s\n", err)
+		l.Error("Failed to open device, err: %s\n", err)
 		return d
 	}
 
