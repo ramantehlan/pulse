@@ -17,7 +17,7 @@ const (
 	// UUIDServiceDeviceInformation is the uint16 UUID to get device information
 	UUIDServiceDeviceInformation = 0x180a
 	// UUIDServiceFirmware to access device firmware
-	UUIDServiceFirmware = uuidBase("1530")
+	UUIDServiceFirmware = "00001530-0000-3512-2118-0009af100700"
 	// UUIDServiceAlertNotification is the uint16 UUID to send notification
 	UUIDServiceAlertNotification = 0x1811
 	// UUIDServiceImmediateAlert is the uint16 UUID to send immediate alert

@@ -46,7 +46,7 @@ func serveSocket() *socketio.Server {
 	server.OnEvent("/", "select_device", func(s socketio.Conn, pID string) bool {
 		l.Info("Device selected by user: ", pID)
 		disconnectActivePeripheral()
-		go connectPeripheral(pID)
+		connectPeripheral(pID)
 		return true
 	})
 
