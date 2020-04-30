@@ -8,6 +8,7 @@ import (
 	"github.com/markbates/pkger"
 	"github.com/paypal/gatt"
 	"github.com/ramantehlan/pulse/internal"
+	"github.com/ramantehlan/pulse/pkg/miband"
 	l "github.com/sirupsen/logrus"
 )
 
@@ -62,12 +63,14 @@ func connectPeripheral(pID string) {
 	activePeripheral = pID
 	selectedPeripheral := peripheralState[pID]
 	selectedPeripheral.Device().Connect(selectedPeripheral)
-	l.Info("Device Connected")
-	_, err := selectedPeripheral.DiscoverServices(nil)
-	if err != nil {
-		fmt.Println("Failed to discover services, err: %s\n", err)
-	}
 
+	l.Info("Device Connected")
+	l.Info("Received Signal Strength Indicator (RSSI)", selectedPeripheral.ReadRSSI())
+
+	hrmID := gatt.UUID16(miband.UUIDServiceHeartRate)
+	fmt.Println(hrmID)
+	//s, _ := selectedPeripheral.DiscoverServices(hrmID)
+	//fmt.Println("%+v\n", s)
 }
 
 func main() {

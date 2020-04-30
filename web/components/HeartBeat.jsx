@@ -1,4 +1,5 @@
 import {Component} from 'react'
+import io from "socket.io-client"
 import styled from "styled-components"
 import {Line} from 'react-chartjs-2'
 
