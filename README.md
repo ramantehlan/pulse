@@ -6,6 +6,8 @@ Check Pulse In Real Time
 
 # Development
 
+> This project is under heavy development
+
 - ReactJS
 - Golang
 - Socket.io
@@ -17,6 +19,20 @@ Check Pulse In Real Time
 `make dev` to setup dev environment
 `make build` to build the project
 
+
+## Failed attempts
+
+- use cython to build c file and use it in go | not working
+- use cythong generated.so file in go using rainycape/dl | not working
+- use go-python and go-python3 to import python file and use it | working but slow and buggy | not a good solution
+- Tried compile main.py and command, not working | not working
+
+## Trying now
+
+- Will try to complie to .whl and then use it as a different service.
+- Now, using gRPC to communicate with python script and then using the
+
+- Best solution is to figure out the gatt and do it in go itself, but for now just doing it like this.
 
 ## To test with the front end
 
@@ -30,3 +46,4 @@ Check Pulse In Real Time
 
 # License
 
+GPL V3
