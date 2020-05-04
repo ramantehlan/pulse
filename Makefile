@@ -20,6 +20,20 @@ setup: ## Setup dev environment
 web: ## Build web
 		yarn --cwd $(PWD)/$(web_dir) export -o $(PWD)/$(web_out)
 
+.PHONY: lib
+lib: ## build the miband library
+	python setup.py sdist	 # build the package
+	python setup.py build_ext --inplace # Build .so files
+	python setup.py bdist_wheel # build .whl file
+	python3 -m pip install /path
+	# Add clean instruction too
+
+# Helps in testing cmd
+.PHONY: dev
+dev: ## Start the development environment
+	  yarn --cwd $(PWD)/$(web_dir) dev &
+		go run $(PWD)/$(cmd_dir)/
+
 # pkger is not working with `pkger -o cmd/pulse` without first running `pkger`.
 # So using this weird logic of running it twice
 .PHONY: pkger
@@ -30,12 +44,6 @@ pkger: web ## Compile web files using pkger
 		pkger -o $(cmd_dir)/
 		rm -f pkged.go
 
-# Helps in testing cmd
-.PHONY: dev
-dev: ## Start the development environment
-	  yarn --cwd $(PWD)/$(web_dir) dev &
-		go run $(PWD)/$(cmd_dir)/
-
 # Remove pkger to stop recompiling of web files
 .PHONY: build
 build: pkger ## Build pulse command
@@ -44,6 +52,9 @@ build: pkger ## Build pulse command
 .PHONY: install
 install: ## Build and install pulse command
 		go install $(PWD)/$(cmd_dir)
+
+.PHONY: run
+run: ## Run the project
 
 .PHONY: clean
 clean: ## Remove all the build files
