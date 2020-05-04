@@ -59,8 +59,11 @@ Check Pulse In Real Time
 # Acknowledgment
 - <div>Icons made by <a href="https://www.flaticon.com/authors/kiranshastry" title="Kiranshastry">Kiranshastry</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 
+<div>Icons made by <a href="https://www.flaticon.com/authors/monkik" title="monkik">monkik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 - https://github.com/golang-standards/project-layout
 - https://github.com/markbates/pkger
+
+## Reason of having a go as a middleware is to able to identify device using the manufacturing data and then fetch the appropriate client from the tools | Add client in any language
 
 ## Developers note
 
@@ -76,6 +79,7 @@ In tools
 ## Possilbe development piviots 
 
 - You can use it for other devices too
+- Add support for other kind of data points
 
 ## Applications
 

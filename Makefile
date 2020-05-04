@@ -53,6 +53,9 @@ build: pkger ## Build pulse command
 install: ## Build and install pulse command
 		go install $(PWD)/$(cmd_dir)
 
+.PHONY: uninstall
+uninstall: ## Uninstall the pulse command and package
+
 .PHONY: run
 run: ## Run the project
 
