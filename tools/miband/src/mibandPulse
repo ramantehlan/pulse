@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+from src.client import start
+
+if __name__ == "__main__":
+    start("E4:1D:71:21:6B:AB")
