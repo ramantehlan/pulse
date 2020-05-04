@@ -36,6 +36,9 @@ func serveSocket() *socketio.Server {
 		}).Warn("Connection lost")
 	})
 
+	// Not an ideal method to ask client to emit to get_devices first
+	// and the emit the devices_list, but the socket.io library is not
+	// working for the broadcasting.
 	// Send te state of devices
 	server.OnEvent("/", "get_devices", func(s socketio.Conn) {
 		jsonState, _ := json.Marshal(deviceState)
