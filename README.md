@@ -4,6 +4,11 @@
 </p>
 Check Pulse In Real Time
 
+- Add go report
+- Add release
+- Add godoc reference
+
+
 # Development
 
 > This project is under heavy development
@@ -22,8 +27,10 @@ Check Pulse In Real Time
 
 ## Failed attempts
 
-- use cython to build c file and use it in go | not working
-- use cythong generated.so file in go using rainycape/dl | not working
+- use cython to build c file and use it in go | not working | Because cython writes alot of G
+- use cythong generated.so file in go using rainycape/dl | not working | You can link .so file in c, and then use it in go, but that will be just too much for a simple program
+- in so | Gettin `undefined symbol: PyUnicode_FromFormat` error
+
 - use go-python and go-python3 to import python file and use it | working but slow and buggy | not a good solution
 - Tried compile main.py and command, not working | not working
 
@@ -34,6 +41,14 @@ Check Pulse In Real Time
 
 - Best solution is to figure out the gatt and do it in go itself, but for now just doing it like this.
 
+## Install files
+
+- Fetch the go build file
+- Fetch the .whl file to install to pip
+- Fetch the desktop entry files
+
+## remove script
+
 ## To test with the front end
 
 - In root, run `make start`, this will start the server.
@@ -43,6 +58,37 @@ Check Pulse In Real Time
 
 # Acknowledgment
 - <div>Icons made by <a href="https://www.flaticon.com/authors/kiranshastry" title="Kiranshastry">Kiranshastry</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+- https://github.com/golang-standards/project-layout
+- https://github.com/markbates/pkger
+
+## Developers note
+
+This project is just to test out
+
+- You can add support for more devices by writing them in the tools folder with the device name and script to dcrypt it
+
+In tools
+- Lib to add the lib to talk to the device
+- client to talk to the grpc server
+- deviceName and pulse in the end to launch
+
+## Possilbe development piviots 
+
+- You can use it for other devices too
+
+## Applications
+
+- Hospitals
+- Monitoring
+- Heart analysis
+
+## DELETE - TEMP-REF
+- https://www.delftstack.com/howto/python/how-to-install-a-python-package-.whl-file/
+- https://medium.com/swlh/distributing-python-packages-protected-with-cython-40fc29d84caf
+- https://dzone.com/articles/executable-package-pip-install
+- https://www.cs.swarthmore.edu/~newhall/unixhelp/howto_C_libraries.html
+- https://medium.com/learning-the-go-programming-language/calling-go-functions-from-other-languages-4c7d8bcc69bf
 
 # License
 

@@ -4,6 +4,10 @@ web/out
 web/.next
 web/node_modules
 bin
+tools/miband/build
+tools/miband/dist
+tools/miband/mibandPulse.egg-info
+tools/miband/src/*.c
 
 # Binaries for programs and plugins
 *.exe

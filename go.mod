@@ -16,5 +16,6 @@ require (
 	github.com/sirupsen/logrus v1.5.0
 	github.com/stretchr/testify v1.5.1 // indirect
 	golang.org/x/sys v0.0.0-20200331124033-c3d80250170d // indirect
+	google.golang.org/grpc v1.28.1 // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect
 )
