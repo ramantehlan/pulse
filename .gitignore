@@ -2,10 +2,7 @@ pkged.go
 cmd/pulse/pkged.go
 web/out
 web/.next
-web/node_modules
 bin
-tools/miband/build
-tools/miband/dist
 tools/miband/mibandPulse.egg-info
 tools/miband/src/*.c
 
@@ -16,6 +13,12 @@ tools/miband/src/*.c
 *.so
 *.dylib
 *.log
+
+# Output directory
+*__pycache__*
+*node_modules*
+*build/*
+*dist/*
 
 # Test binary, built with `go test -c`
 *.test
