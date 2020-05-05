@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/bettercap/gatt v0.0.0-20191018133023-569d3d9372bb
+	github.com/golang/protobuf v1.4.1
 	github.com/googollee/go-socket.io v1.4.3
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
@@ -15,7 +16,9 @@ require (
 	github.com/sbinet/go-python v0.1.0
 	github.com/sirupsen/logrus v1.5.0
 	github.com/stretchr/testify v1.5.1 // indirect
+	gitlab.com/pantomath-io/demo-grpc v0.0.0-20171010145848-6dd27f9b2ed4
+	golang.org/x/net v0.0.0-20190311183353-d8887717615a
 	golang.org/x/sys v0.0.0-20200331124033-c3d80250170d // indirect
-	google.golang.org/grpc v1.28.1 // indirect
+	google.golang.org/grpc v1.28.1
 	gopkg.in/yaml.v2 v2.2.8 // indirect
 )

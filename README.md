@@ -81,6 +81,10 @@ In tools
 - You can use it for other devices too
 - Add support for other kind of data points
 
+If you ever add support for more devices: here are somepoints to take care of:
+  - Identify the devices in the pulse cmd itself and then pick the tool for it
+  - Add build instructions to the Makefile
+
 ## Applications
 
 - Hospitals
