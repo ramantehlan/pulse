@@ -8,6 +8,9 @@ from bluepy.btle import Peripheral, DefaultDelegate, ADDR_TYPE_RANDOM, BTLEExcep
 import crc16
 import os
 
+requestInterval = 12
+
+
 class Immutable(type):
 
     def __call__(*args):
@@ -470,11 +473,10 @@ class MiBand3(Peripheral):
             # WTF
             char_sensor.write(b'\x02')
             t = time.time()
-            while True:
+            while true:
                 self.waitForNotifications(0.5)
                 self._parse_queue()
-                # send ping request every 12 sec
-                if (time.time() - t) >= 12:
+                if (time.time() - t) >= requestInterval:
                     char_ctrl.write(b'\x16', True)
                     t = time.time()
 
