@@ -1,14 +1,18 @@
 package main
 
 import (
+	"fmt"
+	"net"
 	"net/http"
 	"time"
 
 	"github.com/bettercap/gatt"
 	"github.com/markbates/pkger"
+	"github.com/ramantehlan/pulse/api"
 	internal "github.com/ramantehlan/pulse/internal/openBrowser"
 	options "github.com/ramantehlan/pulse/internal/options"
 	l "github.com/sirupsen/logrus"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -65,6 +69,17 @@ func connectPeripheral(pID string) {
 }
 
 func main() {
+	// Create a listener on tcp port 7777
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", 7777))
+	if err != nil {
+		l.Error(err)
+	}
+
+	s := api.Server{}
+	grpcServer := grpc.NewServer()
+
+	api.RegisterPingServer(grpcServer, &s)
+
 	go startServer()
 
 	d, err := gatt.NewDevice(options.DefaultClientOptions...)
