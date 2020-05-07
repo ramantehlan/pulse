@@ -5,6 +5,7 @@ web/.next
 bin
 tools/miband/mibandPulse.egg-info
 tools/miband/src/*.c
+tools/miband/src/*.so
 
 # Binaries for programs and plugins
 *.exe
@@ -17,8 +18,8 @@ tools/miband/src/*.c
 # Output directory
 *__pycache__*
 *node_modules*
-*build/*
-*dist/*
+*build*
+*dist*
 
 # Test binary, built with `go test -c`
 *.test

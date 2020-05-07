@@ -9,6 +9,8 @@ import crc16
 import os
 
 requestInterval = 12
+# for 4 minutes
+realtimeLimit = time.time() + 30
 
 
 class Immutable(type):
@@ -251,6 +253,7 @@ class MiBand3(Peripheral):
     def _parse_queue(self):
         while True:
             try:
+                print("in parse_queue")
                 res = self.queue.get(False)
                 _type = res[0]
                 if self.heart_measure_callback and _type == QUEUE_TYPES.HEART:
@@ -473,12 +476,17 @@ class MiBand3(Peripheral):
             # WTF
             char_sensor.write(b'\x02')
             t = time.time()
-            while true:
+            global realtimeLimit
+            while time.time() < realtimeLimit:
+                print('in while')
                 self.waitForNotifications(0.5)
                 self._parse_queue()
                 if (time.time() - t) >= requestInterval:
+                    print('in while if')
                     char_ctrl.write(b'\x16', True)
                     t = time.time()
+
+
 
     def stop_realtime(self):
             char_m = self.svc_heart.getCharacteristics(UUIDS.CHARACTERISTIC_HEART_RATE_MEASURE)[0]
