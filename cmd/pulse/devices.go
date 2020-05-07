@@ -1,10 +1,7 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/bettercap/gatt"
-	mi "github.com/ramantehlan/pulse/pkg/miband"
 	l "github.com/sirupsen/logrus"
 )
 
@@ -49,15 +46,6 @@ func sendRequest(vhandle uint16, b []byte, per gatt.Peripheral) error {
 func onPeripheralConnected(p gatt.Peripheral, err error) {
 	l.Info("Peripheral Connected: ", p.ID())
 	l.Info("Received Signal Strength Indicator (RSSI): ", p.ReadRSSI())
-
-	fmt.Println(mi.UUIDServiceMiband2)
-	genericAccessUUID := []gatt.UUID{gatt.UUID16(mi.UUIDServiceGenericAccess)}
-	fmt.Println(genericAccessUUID)
-	ss, err := p.DiscoverServices(genericAccessUUID)
-	fmt.Println(len(ss))
-	if err != nil {
-		fmt.Println(" Error in discovering services: ", err)
-	}
 }
 
 func onPeripheralDisconnected(p gatt.Peripheral, err error) {

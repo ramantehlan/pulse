@@ -1,14 +1,14 @@
 package main
 
 import (
-	"fmt"
-	"net"
+	"context"
+	"log"
 	"net/http"
 	"time"
 
 	"github.com/bettercap/gatt"
 	"github.com/markbates/pkger"
-	"github.com/ramantehlan/pulse/api"
+	heartBeat "github.com/ramantehlan/pulse/api"
 	internal "github.com/ramantehlan/pulse/internal/openBrowser"
 	options "github.com/ramantehlan/pulse/internal/options"
 	l "github.com/sirupsen/logrus"
@@ -68,18 +68,27 @@ func connectPeripheral(pID string) {
 	selectedPeripheral.Device().Connect(selectedPeripheral)
 }
 
-func main() {
-	// Create a listener on tcp port 7777
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", 7777))
+func startPulseTool() {
+	var conn *grpc.ClientConn
+
+	conn, err := grpc.Dial(":7002", grpc.WithInsecure())
 	if err != nil {
-		l.Error(err)
+		log.Fatalf("did not connect: %s", err)
 	}
+	defer conn.Close()
 
-	s := api.Server{}
-	grpcServer := grpc.NewServer()
+	c := heartBeat.NewDevicePulseClient(conn)
 
-	api.RegisterPingServer(grpcServer, &s)
+	response, err := c.GetHeartBeats(context.Background(),
+		&heartBeat.DeviceUUID{UUID: "uuid"})
+	if err != nil {
+		l.Error("error: ", err)
+	}
+	l.Info("Response from gRPC server: %s", response.HeartBeats)
+}
 
+func main() {
+	startPulseTool()
 	go startServer()
 
 	d, err := gatt.NewDevice(options.DefaultClientOptions...)
