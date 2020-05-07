@@ -1,13 +1,15 @@
 # Define Shell
 SHELL = /bin/sh
+# Opinionated: I like to use absolute path
 PWD = $(shell pwd)
 app = pulse
 cmd_dir = cmd/pulse
 web_dir = web
 cmd_out = bin
 web_out = bin/template
+miband_dir = tools/miband
 
-.PHONY: help setup web tools grpc dev pkger 
+.PHONY: help setup web tools grpc dev pkger build install uninstall run clean hard-clean
 
 help: ## Display help screen
 		@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -19,20 +21,19 @@ setup: ## Setup dev environment
 web: ## Build web
 		yarn --cwd $(PWD)/$(web_dir) export -o $(PWD)/$(web_out)
 
-tools: ## build the miband library
-	python setup.py sdist	 # build the package
-	python setup.py build_ext --inplace # Build .so files
-	python setup.py bdist_wheel # build .whl file
-	python3 -m pip install /path
-	# Add clean instruction too
-
 grpc: ## Build proto buffer files
-	protoc -I api/ \
-		-I${GOPATH}/src \
-		--go_out=plugins=grpc:api \
-		api/api.proto
-	protoc -I api/ \
-		--python_out=$(PWD)/tools/miband/src 
+	python3 -m grpc_tools.protoc -Iapi/ \
+		--python_out=$(PWD)/$(miband_dir)/src \
+		--grpc_python_out=$(PWD)/$(miband_dir)/src \
+		api/mibandDevice.proto
+
+tools: ## build the miband library
+	cd $(PWD)/$(miband_dir)/
+	python3 $(PWD)/$(miband_dir)/setup.py sdist	 # build the package
+	python3 $(PWD)/$(miband_dir)/setup.py build_ext --inplace # Build .so files
+	python3 $(PWD)/$(miband_dir)/setup.py bdist_wheel # build .whl file
+	#python3 -m pip install /path
+	# Add clean instruction too
 
 dev: ## Start the development environment
 	  yarn --cwd $(PWD)/$(web_dir) dev &
@@ -59,6 +60,16 @@ uninstall: ## Uninstall the pulse command and package
 run: ## Run the project
 
 clean: ## Remove all the build files
-		rm -r $(PWD)/$(cmd_out)
-		rm -r $(PWD)/$(web_out)
+		rm -rf $(PWD)/$(cmd_out)
+		rm -rf $(PWD)/$(miband_dir)/mibandPulse.egg-info
+		rm -rf $(PWD)/$(miband_dir)/build
+		rm -rf $(PWD)/$(miband_dir)/dist
+
+hard-clean: clean ## Remove all the build files and pre-build files (ie. paker.go)
+		rm -rf $(PWD)/$(cmd_dir)/pkger.go
+		rm -rf $(PWD)/$(web_dir)/node_modules
+		rm -rf $(PWD)/$(web_dir)/.next
+		rm -rf $(PWD)/$(web_dir)/out
+		rm -rf $(PWD)/$(miband_dir)/src/*.c
+		rm -rf $(PWD)/$(miband_dir)/src/*.so
 

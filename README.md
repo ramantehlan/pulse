@@ -63,9 +63,14 @@ Check Pulse In Real Time
 - https://github.com/golang-standards/project-layout
 - https://github.com/markbates/pkger
 
+- BloomRPC
+
 ## Reason of having a go as a middleware is to able to identify device using the manufacturing data and then fetch the appropriate client from the tools | Add client in any language
 
 ## Developers note
+
+- Add requirement.txt file
+- Setup grpc for go and python
 
 This project is just to test out
 
@@ -84,6 +89,14 @@ In tools
 If you ever add support for more devices: here are somepoints to take care of:
   - Identify the devices in the pulse cmd itself and then pick the tool for it
   - Add build instructions to the Makefile
+
+# Desclamer
+
+This is a very experimental project created a college submission in a 2 weeks time, so manythings could be done better, but things are done to fit the time and the decisions are based on it. If you still have any suggestion, you can add them to the suggestions issue and Thank you for understanding.
+
+# Troubleshoot
+
+If you regenerate the grpc files for python, you might have to manually enter the import part to add src init
 
 ## Applications
 
