@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+
+// DeviceUUID is the strucutre of the incoming message
+message DeviceUUID {
+  string UUID = 1;
+}
+
+
+// HeartBeats is to structure of outgoing message
+message HeartBeats {
+  string pulse = 1;
+  string error = 2;
+}
+
+
+// MibandDevice service is to connect to the mibands and operate on it
+service MibandDevice {
+  rpc GetHeartBeats(DeviceUUID) returns (stream HeartBeats) {}
+}
