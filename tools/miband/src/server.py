@@ -1,33 +1,59 @@
 import struct
 import sys
+import os
 import time
 from concurrent import futures
 from queue import Empty
 import grpc
-from lib import MiBand3, UUIDS, QUEUE_TYPES
+from src.lib import MiBand3, UUIDS, QUEUE_TYPES
+import signal, psutil
 
 # Generated classes
-import mibandDevice_pb2 as mi_pb2
-import mibandDevice_pb2_grpc as mi_pb2_grpc
+import src.mibandDevice_pb2 as mi_pb2
+import src.mibandDevice_pb2_grpc as mi_pb2_grpc
 
 # State of device
 isDeviceActive = False
 # Notification request interval
 requestInterval = 12
 # Limit the time to fetch heart beats for
-realtimeLimit = 40
+realtimeLimit = 60 * 3
 # Kill threads with this flag
 killProgram = False
+# server pool
+pool = futures.ThreadPoolExecutor(max_workers=1)
 # gRPC global state
-server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
+server = grpc.server(pool)
+
 
 def start():
     global server
-    mi_pb2_grpc.add_MibandDeviceServicer_to_server(MibandDeviceServicer(), server)
+    mi_pb2_grpc.add_MibandDeviceServicer_to_server(
+        MibandDeviceServicer(), server)
     server.add_insecure_port('[::]:7002')
     server.start()
     print("gRPC server running on port :7002")
-    input("Press enter to stop the server")
+    # Instead of sleep here, we should use input to block the program 
+    # I tried to system kill the program, but that doesn't work probably
+    # because of futures
+    time.sleep(realtimeLimit * 1.5)
+    shutdown()
+
+
+def kill_child_processes(parent_pid, sig=signal.SIGTERM):
+    try:
+        parent = psutil.Process(parent_pid)
+    except psutil.NoSuchProcess:
+        return
+    children = parent.children(recursive=True)
+    for process in children:
+        process.send_signal(sig)
+
+def shutdown():
+    server.stop(None)
+    pool.shutdown(wait=False)
+    kill_child_processes(os.getpid())
+    print("Killing server")
 
 
 class MibandDeviceServicer(mi_pb2_grpc.MibandDeviceServicer):
@@ -43,36 +69,33 @@ class MibandDeviceServicer(mi_pb2_grpc.MibandDeviceServicer):
 
             t = time.time()
             limit = time.time() + realtimeLimit
-            while time.time() < limit:
-                response = mi_pb2.HeartBeats()
-                mi.band.waitForNotifications(0.5)
-                hb = mi._parse_queue()
-                if (time.time() - t) >= requestInterval:
-                    char_ctrl.write(b'\x16', True)
-                    t = time.time()
-                if hb != -1:
-                    print("Streamed heartBeat: ", hb)
-                    response.pulse = str(hb)
-                    yield response
-                else:
-                    continue
-
-            print("Done")
+            try: 
+                while time.time() < limit:
+                    response = mi_pb2.HeartBeats()
+                    mi.band.waitForNotifications(0.5)
+                    hb = mi._parse_queue()
+                    if (time.time() - t) >= requestInterval:
+                        char_ctrl.write(b'\x16', True)
+                        t = time.time()
+                    if hb != -1:
+                        print("Streamed heartBeat: ", hb)
+                        response.pulse = str(hb)
+                        yield response
+                    else:
+                        continue
+            except:
+                print("Cancelling RPC due to time limit")
+                context.cancel()
             mi.band.stop_realtime()
             mi.band.disconnect()
-            isDeviceActive = False
-            self.Shutdown()
-        
         else:
             response = mi_pb2.HeartBeats()
             response.error = "Device busy"
             yield response
-    
-    def Shutdown(self):
-        server.stop(None)
-        print("Killing server")
-        sys.exit(0)
-    
+        
+        isDeviceActive = False
+        shutdown()
+        print("Done")   
 
 class Mi:
 

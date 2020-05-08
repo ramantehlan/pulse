@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from server import start
+from src.server import start
 
 if __name__ == "__main__":
     start()
