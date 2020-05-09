@@ -15,10 +15,32 @@ function createLabels(num){
 export default class HeartBeat extends Component {
   constructor(props) {
     super(props)
+    this.chartRef = React.createRef()
     this.state = {
-      pulse: [ 60, 120, 105, 92, 70, 80, 65, 85, 100, 114, 18,  120, 105, 92, 70, 80, 65, 85, 100, 114, 80]
+      socket: this.props.socket,
+      pulse: [ 43, 34,67 ]
     }
   }
+
+  componentDidMount(){
+  
+    let chart = this.chartRef.chartInstance
+   this.state.socket.on("heartBeat", (data) => {
+      data = JSON.parse(data)
+      console.log(data["pulse"])
+      this.state.pulse.push(4)
+      console.log(this.state.pulse)
+      chart.update()
+   })
+
+    this.interval = setInterval(() => {
+         this.state.socket.emit("get_pulse", true)
+         console.log("sending pulse request")
+    }, 3000)
+   
+
+  }
+
 
   render() {
 
@@ -86,7 +108,7 @@ export default class HeartBeat extends Component {
 
     return (
       <>
-        <Line data={data} width={150} options={options} height={60}/>
+        <Line ref={(reference) => this.chartRef = reference} data={data} width={150} options={options} height={60}/>
       </>
     )
   }

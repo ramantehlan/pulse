@@ -1,6 +1,7 @@
 import Head from "next/head"
 import {Component} from 'react'
 import styled from "styled-components"
+import io from "socket.io-client"
 
 import DevicesList from "../components/devicesList.jsx"
 import HeartBeat from "../components/HeartBeat.jsx"
@@ -38,6 +39,9 @@ export const Side = styled.div`
 class App extends Component {
   constructor(props) {
     super(props)
+    this.state = {
+      socket: io(":7000")
+    }
   }
 
   render() {
@@ -48,10 +52,10 @@ class App extends Component {
   </Head>
   <Layout>
     <Side>
-          <DevicesList />
+          <DevicesList socket={this.state.socket} />
     </Side>
     <Body>
-          <HeartBeat />
+          <HeartBeat socket={this.state.socket}/>
     </Body>
   </Layout>
 </>)

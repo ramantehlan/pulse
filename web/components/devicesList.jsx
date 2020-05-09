@@ -38,8 +38,7 @@ export default class DeviceList extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      socket: io(":7000"),
-      listSocket: io(":7004"),
+      socket: this.props.socket,
       selectedDevice: "",
       devicesList: {},
       connected: false,
@@ -47,25 +46,19 @@ export default class DeviceList extends Component {
   }
 
   componentDidMount() {
-   this.interval = setInterval(() => {
-      this.state.listSocket.emit("get_devices", true)
-      console.log("Sending devices list request")
-
-      this.state.listSocket.on('disconnect', function () {
-        console.log("socket disconnected");
-      });   
-   }, 3000)
 
    setTimeout( () => { 
-     clearInterval(this.interval) 
-     console.log("Stopping devices list fetch") 
-   }, 16000)
+      this.state.socket.emit("get_devices", true)
+      console.log("Sending devices list request")
 
-   this.state.listSocket.on("devices_list", (data) => {
+   }, 2000)
+
+   this.state.socket.on("devices_list", (data) => {
       data = JSON.parse(data)
       console.log(data)
       this.setState({devicesList: data})
     })
+
   }
 
   handleClick = (key) => {
@@ -73,7 +66,8 @@ export default class DeviceList extends Component {
       console.log("selection data sent, data that got return is: " + data)
       this.setState({selectedDevice: data})
     })
-  }
+
+      }
 
   componentWillUnmount() {
     clearInterval(this.interval);
