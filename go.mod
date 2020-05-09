@@ -7,6 +7,7 @@ require (
 	github.com/golang/protobuf v1.4.1
 	github.com/googollee/go-socket.io v1.4.3
 	github.com/gorilla/websocket v1.4.2 // indirect
+	github.com/graarh/golang-socketio v0.0.0-20170510162725-2c44953b9b5f
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/markbates/pkger v0.15.1
 	github.com/mattn/go-colorable v0.1.6 // indirect

@@ -26,6 +26,21 @@ Check Pulse In Real Time
 
 I had to take so many design decisions, not sure if all of them are right, the point here is to see what we can do to achieve something
 
+
+- the biggest problem with technology today is that it's too much configurable, or specific, like it needs too much alot of specific things to work with.
+- the dependecy graph is too big, specially when you grow big and big, like a chess game, where in the middle game everything is just too overdependent, there are just too many micro servcies and they don't work without each other.
+- Instead of services depending on each other, they should be depending on just one service.
+
+- As a new person in the infra, I have a new vision, I am not yet molded by the industry
+
+- Small programs natually scales, they are easy to control and manage
+
+- Don't, just don't reinvent the wheel
+
+- Drop REST before it's too late!
+
+- Bindings are good, but can't trust them when it comes to long term support | I won't use them for most of my program
+
 ## Failed attempts
 
 - use cython to build c file and use it in go | not working | Because cython writes alot of G
