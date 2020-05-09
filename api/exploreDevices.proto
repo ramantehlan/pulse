@@ -1,0 +1,15 @@
+syntax = "proto3";
+package exploreDevices;
+
+service ExploreDevices {
+    rpc GetList (Empty) returns (stream Device) {
+    }
+}
+
+message Empty {
+}
+
+message Device {
+    string pID = 1;
+    string name = 2;
+}

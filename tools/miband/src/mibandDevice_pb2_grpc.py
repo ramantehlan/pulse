@@ -15,7 +15,7 @@ class MibandDeviceStub(object):
             channel: A grpc.Channel.
         """
         self.GetHeartBeats = channel.unary_stream(
-                '/MibandDevice/GetHeartBeats',
+                '/main.MibandDevice/GetHeartBeats',
                 request_serializer=mibandDevice__pb2.DeviceUUID.SerializeToString,
                 response_deserializer=mibandDevice__pb2.HeartBeats.FromString,
                 )
@@ -41,7 +41,7 @@ def add_MibandDeviceServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'MibandDevice', rpc_method_handlers)
+            'main.MibandDevice', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
@@ -60,7 +60,7 @@ class MibandDevice(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/MibandDevice/GetHeartBeats',
+        return grpc.experimental.unary_stream(request, target, '/main.MibandDevice/GetHeartBeats',
             mibandDevice__pb2.DeviceUUID.SerializeToString,
             mibandDevice__pb2.HeartBeats.FromString,
             options, channel_credentials,

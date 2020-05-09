@@ -2,15 +2,13 @@ package main
 
 import (
 	"context"
-	"log"
+	"io"
 	"net/http"
-	"time"
 
-	"github.com/bettercap/gatt"
+	"github.com/googollee/go-socket.io"
 	"github.com/markbates/pkger"
-	heartBeat "github.com/ramantehlan/pulse/api"
-	internal "github.com/ramantehlan/pulse/internal/openBrowser"
-	options "github.com/ramantehlan/pulse/internal/options"
+	ob "github.com/ramantehlan/pulse/internal/openBrowser"
+	s "github.com/ramantehlan/pulse/internal/socket"
 	l "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )
@@ -20,25 +18,19 @@ const (
 	Port = ":7000"
 )
 
-// DeviceStruct is structure of information that is sent.
-type DeviceStruct struct {
-	Name             string
-	LocalName        string
-	PeripheralID     string
-	TXPowerLevel     int
-	ManufacturerData []byte
-	ServiceData      []gatt.ServiceData
+// Socket state
+var socket = s.ServeSocket()
+
+// Function to start the socket
+func startSocket() {
+	// To catch the device selected by the user
+	socket.OnEvent("/", "select_device", func(s socketio.Conn, pID string) bool {
+		l.Info("Device selected by user: ", pID)
+		connectPeripheral(pID)
+		return true
+	})
+
 }
-
-// Global variables to manage state
-// Stores the map of type string to store available peripheral
-var deviceState = make(map[string]DeviceStruct)
-
-// Peripheral currently connected to
-var activePeripheral string = ""
-var peripheralState = make(map[string]gatt.Peripheral)
-var advertisementState = make(map[string]*gatt.Advertisement)
-var socket = serveSocket()
 
 // Function to start frontend and websocket
 func startServer() {
@@ -46,7 +38,7 @@ func startServer() {
 	defer socket.Close()
 
 	templateDir := pkger.Dir("/bin/template")
-	internal.OpenBrowser("http://localhost" + Port)
+	ob.OpenBrowser("http://localhost" + Port)
 	http.Handle("/", http.FileServer(templateDir))
 	http.Handle("/socket.io/", socket)
 
@@ -54,59 +46,41 @@ func startServer() {
 	l.Fatal(http.ListenAndServe(Port, nil))
 }
 
-func disconnectActivePeripheral() {
-	if activePeripheral != "" {
-		p := peripheralState[activePeripheral]
-		p.Device().CancelConnection(p)
-	}
-}
-
 func connectPeripheral(pID string) {
 	l.Info("Trying to connect to ", pID)
-	activePeripheral = pID
-	selectedPeripheral := peripheralState[pID]
-	selectedPeripheral.Device().Connect(selectedPeripheral)
-}
 
-func startPulseTool() {
-	var conn *grpc.ClientConn
-
+	// create a gRPC stub
 	conn, err := grpc.Dial(":7002", grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("did not connect: %s", err)
+		l.Error(err)
 	}
 	defer conn.Close()
-
-	c := heartBeat.NewDevicePulseClient(conn)
-
-	response, err := c.GetHeartBeats(context.Background(),
-		&heartBeat.DeviceUUID{UUID: "uuid"})
-	if err != nil {
-		l.Error("error: ", err)
+	device := NewMibandDeviceClient(conn)
+	deviceUUID := &DeviceUUID{
+		UUID: pID,
 	}
-	l.Info("Response from gRPC server: %s", response.HeartBeats)
+
+	response, err := device.GetHeartBeats(context.Background(), deviceUUID)
+	if err != nil {
+		l.Error(err)
+	}
+	// Fetch stream and broadcast it to the socket
+	for {
+		pulse, err := response.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			l.Error(err)
+			break
+		}
+
+		l.Info(pulse)
+	}
 }
 
 func main() {
-	startPulseTool()
-	go startServer()
-
-	d, err := gatt.NewDevice(options.DefaultClientOptions...)
-	if err != nil {
-		l.Error("Failed to open device, err: %s\n", err)
-		return
-	}
-
-	d.Handle(
-		gatt.PeripheralDiscovered(onPeripheralDiscovered),
-		gatt.PeripheralConnected(onPeripheralConnected),
-		gatt.PeripheralDisconnected(onPeripheralDisconnected),
-	)
-	d.Init(onDeviceStateChanged)
-
-	time.Sleep(10 * time.Second)
-	d.StopScanning()
-	l.Info("Stopping device scan")
-
+	startSocket()
+	startServer()
 	select {}
 }

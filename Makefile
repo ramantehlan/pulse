@@ -26,6 +26,15 @@ grpc: ## Build proto buffer files
 		--python_out=$(PWD)/$(miband_dir)/src \
 		--grpc_python_out=$(PWD)/$(miband_dir)/src \
 		api/mibandDevice.proto
+	protoc -I api/ \
+		-I${GOPATH}/src \
+	  --go_out=plugins=grpc:$(PWD)/$(cmd_dir) \
+	  api/mibandDevice.proto
+	protoc -I api/ \
+		-I${GOPATH}/src \
+	  --go_out=plugins=grpc:$(PWD)/$(cmd_dir) \
+	  api/exploreDevices.proto
+
 
 tools: ## build the miband library
 	cd $(PWD)/$(miband_dir)/

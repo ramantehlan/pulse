@@ -24,6 +24,7 @@ Check Pulse In Real Time
 `make dev` to setup dev environment
 `make build` to build the project
 
+I had to take so many design decisions, not sure if all of them are right, the point here is to see what we can do to achieve something
 
 ## Failed attempts
 
@@ -89,6 +90,35 @@ In tools
 If you ever add support for more devices: here are somepoints to take care of:
   - Identify the devices in the pulse cmd itself and then pick the tool for it
   - Add build instructions to the Makefile
+
+- We need different protoc for go and python since the output is differnet 
+
+- I can't run pulse with out sudo since it's designed for embidding, but I can't run miband pulse with sudo since it doesn't install files to sudo paht
+Had to symlink the local site-packages to sudo site-packages | add the python path didn't wor
+
+- It was stupid of me to write two programs to access one bluetooths device.
+
+
+- I don't even know why I am writting this blog, actually this is not a blog, it's a journal for the project I created.
+
+- Sometimes you won't be able to see if this will lang long or not, but you should ask yourself that.
+
+- I am not an expert when I started this project.
+
+I guess on a upper level, microservices work great!
+
+# conclusion
+
+I even tried to compile python and create so files to make it fast and import it, then I create a wheel and install it in system, but that didn't work either.
+
+I think, there can be ways to do multilever compilations, but that will be really raise the questions of stability, and even if you are able to run something, it won't be stable
+You will 
+
+Before you jump into any language, make sure you look at the library support and define the goals before you pick a library
+
+No problem is big, we just haven't found ways to break it. 
+
+There are many if, or else in this project, but it's the concolusoins I got are. 
 
 # Desclamer
 

@@ -1,4 +1,4 @@
-package option
+package options
 
 import (
 	"github.com/bettercap/gatt"
