@@ -1,68 +1,32 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net"
-	"net/http"
 	"time"
 
 	"github.com/bettercap/gatt"
-	"github.com/googollee/go-socket.io"
-	api "github.com/ramantehlan/pulse/internal/exploreDevices"
+	explore "github.com/ramantehlan/pulse/internal/exploreDevices"
 	"github.com/ramantehlan/pulse/internal/options"
-	s "github.com/ramantehlan/pulse/internal/socket"
 	l "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )
 
 const (
 	// Port for the client server.
-	Port = ":7004"
+	Port = 7004
 	// SearchTime is the time limit to search devices for
-	SearchTime = 8000
+	SearchTime = 5
 )
 
-// Socket state
-var socket = s.ServeSocket()
-
-// Global variables to manage state
-// Stores the map of type string to store available peripheral
-var deviceState = make(map[string]DeviceStruct)
-
-// DeviceStruct is structure of information that is sent.
-type DeviceStruct struct {
-	Name             string
-	LocalName        string
-	PeripheralID     string
-	TXPowerLevel     int
-	ManufacturerData []byte
-	ServiceData      []gatt.ServiceData
-}
-
-// Function to start the socket
-func startSocket() {
-
-	// Not an ideal method to ask client to emit to get_devices first
-	// and the emit the devices_list, but the socket.io library is not
-	// working for the broadcasting.
-	// Send te state of devices
-	socket.OnEvent("/", "get_devices", func(s socketio.Conn) {
-		jsonState, _ := json.Marshal(deviceState)
-		s.Emit("devices_list", string(jsonState))
-	})
-
-	go socket.Serve()
-	defer socket.Close()
-
-	http.Handle("/socket.io/", socket)
-	l.WithFields(l.Fields{"port": Port}).Info("pulseExplorer server running")
-	l.Fatal(http.ListenAndServe(Port, nil))
+// create a server instance
+var s = explore.DevicesServer{
+	DeviceState: make(map[string]explore.DeviceStruct),
 }
 
 func onPeripheralDiscovered(p gatt.Peripheral, a *gatt.Advertisement, rssi int) {
-	deviceState[p.ID()] = DeviceStruct{
+	state := explore.DeviceStruct{
 		p.Name(),
 		a.LocalName,
 		p.ID(),
@@ -70,6 +34,8 @@ func onPeripheralDiscovered(p gatt.Peripheral, a *gatt.Advertisement, rssi int) 
 		a.ManufacturerData,
 		a.ServiceData,
 	}
+
+	s.AddDeviceState(state)
 
 	l.WithFields(l.Fields{
 		"Name":         p.Name(),
@@ -91,63 +57,36 @@ func onDeviceStateChanged(d gatt.Device, s gatt.State) {
 	}
 }
 
-func sendRequest(vhandle uint16, b []byte, per gatt.Peripheral) error {
-	c := &gatt.Characteristic{}
-	c.SetVHandle(vhandle)
-	return per.WriteCharacteristic(c, b, true)
-}
-
-// DevicesServer represets the gRPC server
-type DevicesServer struct {
-}
-
-// GetList is to handle when the request is sent server
-func (s *DevicesServer) GetList(empty *api.Empty, stream api.ExploreDevices_GetListServer) error {
-	log.Printf("Device list requested")
-
-	for _, value := range deviceState {
-
-		device := api.Device{
-			PID:  value.PeripheralID,
-			Name: value.Name,
-		}
-
-		if err := stream.Send(&device); err != nil {
-			return err
-		}
-
-	}
-
-	return nil
-}
-
-func main() {
-	go startSocket()
-
+func searchDevices() {
 	d, err := gatt.NewDevice(options.DefaultClientOptions...)
 	if err != nil {
 		l.Error("Failed to open device, err: ", err)
 		return
 	}
-
 	d.Handle(
 		gatt.PeripheralDiscovered(onPeripheralDiscovered),
 	)
 	d.Init(onDeviceStateChanged)
-	d.StopScanning()
+}
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", 7005))
+func startServer() {
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", Port))
+	fmt.Println("pulseExplorer listening on ", Port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	// create a server instance
-	s := DevicesServer{}
 
 	// create a gRPC server object
 	grpcServer := grpc.NewServer()
-
-	api.RegisterExploreDevicesServer(grpcServer, &s)
+	explore.RegisterExploreDevicesServer(grpcServer, &s)
 	grpcServer.Serve(lis)
+}
 
+// We intentionally want this program to exit after x seconds
+// as this program controls the bluetooth, so when it's running
+// we can't connect to miband or other tools
+func main() {
+	go searchDevices()
+	go startServer()
 	time.Sleep(SearchTime * time.Second)
 }
