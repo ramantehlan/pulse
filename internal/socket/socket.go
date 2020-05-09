@@ -5,7 +5,7 @@ import (
 	l "github.com/sirupsen/logrus"
 )
 
-// ServeSocket is to get the base instance of a socket server
+// ServerSocket is to get the base instance of a socket server
 func ServeSocket() *socketio.Server {
 	server, err := socketio.NewServer(nil)
 	if err != nil {
