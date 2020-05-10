@@ -148,6 +148,7 @@ If you regenerate the grpc files for python, you might have to manually enter th
 - Hospitals
 - Monitoring
 - Heart analysis
+- Sports
 
 ## DELETE - TEMP-REF
 - https://www.delftstack.com/howto/python/how-to-install-a-python-package-.whl-file/
