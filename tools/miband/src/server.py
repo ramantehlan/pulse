@@ -1,12 +1,12 @@
 import struct
-import sys
 import os
 import time
 from concurrent import futures
 from queue import Empty
 import grpc
 from src.lib import MiBand3, UUIDS, QUEUE_TYPES
-import signal, psutil
+import signal
+import psutil
 
 # Generated classes
 import src.mibandDevice_pb2 as mi_pb2
@@ -33,11 +33,7 @@ def start():
     server.add_insecure_port('[::]:7002')
     server.start()
     print("gRPC server running on port :7002")
-    # Instead of sleep here, we should use input to block the program 
-    # I tried to system kill the program, but that doesn't work probably
-    # because of futures
-    time.sleep(realtimeLimit * 1.5)
-    shutdown()
+    input("press enter to stop the server")
 
 
 def kill_child_processes(parent_pid, sig=signal.SIGTERM):
@@ -48,6 +44,7 @@ def kill_child_processes(parent_pid, sig=signal.SIGTERM):
     children = parent.children(recursive=True)
     for process in children:
         process.send_signal(sig)
+
 
 def shutdown():
     server.stop(None)
@@ -69,7 +66,7 @@ class MibandDeviceServicer(mi_pb2_grpc.MibandDeviceServicer):
 
             t = time.time()
             limit = time.time() + realtimeLimit
-            try: 
+            try:
                 while time.time() < limit:
                     response = mi_pb2.HeartBeats()
                     mi.band.waitForNotifications(0.5)
@@ -92,10 +89,10 @@ class MibandDeviceServicer(mi_pb2_grpc.MibandDeviceServicer):
             response = mi_pb2.HeartBeats()
             response.error = "Device busy"
             yield response
-        
+
         isDeviceActive = False
-        shutdown()
-        print("Done")   
+        print("Test over | Device disconnected")
+
 
 class Mi:
 
@@ -105,7 +102,7 @@ class Mi:
         isDeviceActive = True
 
     def authDevice(self):
-        print("Device not active")
+        print("Device is free")
         self.band.setSecurityLevel(level="medium")
         try:
             self.band.authenticate()
