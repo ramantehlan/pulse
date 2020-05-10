@@ -47,7 +47,7 @@ export default class DeviceList extends Component {
 
   componentDidMount() {
 
-   setTimeout( () => { 
+   setTimeout( () => {
       this.state.socket.emit("get_devices", true)
       console.log("Sending devices list request")
 
@@ -62,15 +62,11 @@ export default class DeviceList extends Component {
   }
 
   handleClick = (key) => {
-    this.state.socket.emit("select_device", key, (data) => {
-      console.log("selection data sent, data that got return is: " + data)
-      this.setState({selectedDevice: data})
+    this.state.socket.emit("select_device", {pid: key}, () => {
+      console.log("Device Selected ", key)
+      this.setState({selectedDevice: key})
     })
 
-      }
-
-  componentWillUnmount() {
-    clearInterval(this.interval);
   }
 
   render() {

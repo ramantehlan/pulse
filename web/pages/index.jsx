@@ -40,7 +40,7 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      socket: io(":7000")
+      socket: io(":7000",  {transports: ['websocket']})
     }
   }
 

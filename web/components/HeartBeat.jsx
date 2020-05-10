@@ -18,29 +18,23 @@ export default class HeartBeat extends Component {
     this.chartRef = React.createRef()
     this.state = {
       socket: this.props.socket,
-      pulse: [ 43, 34,67 ]
+      pulse: [ 0 ]
     }
   }
 
   componentDidMount(){
-  
-    let chart = this.chartRef.chartInstance
+
    this.state.socket.on("heartBeat", (data) => {
-      data = JSON.parse(data)
-      console.log(data["pulse"])
-      this.state.pulse.push(4)
-      console.log(this.state.pulse)
-      chart.update()
+      this.state.pulse.push(data)
+      console.log(data)
    })
 
-    this.interval = setInterval(() => {
-         this.state.socket.emit("get_pulse", true)
-         console.log("sending pulse request")
-    }, 3000)
-   
+   let chart = this.chartRef.chartInstance
+   this.interval = setInterval(() => {
+     chart.update()
+   },1500)
 
   }
-
 
   render() {
 
@@ -62,7 +56,7 @@ export default class HeartBeat extends Component {
     }
     let options = {
         animation: {
-           duration: 600,
+           duration: 100,
            easing: "easeOutSine",
          },
         title: {
