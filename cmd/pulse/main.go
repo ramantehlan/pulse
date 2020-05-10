@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/googollee/go-socket.io"
+	"github.com/graarh/golang-socketio"
 	"github.com/markbates/pkger"
 	explore "github.com/ramantehlan/pulse/internal/exploreDevices"
 	ob "github.com/ramantehlan/pulse/internal/openBrowser"
@@ -24,45 +24,32 @@ const (
 // Socket state
 var socket = s.ServeSocket()
 
-// pulseState
-var pulseState = make(map[string][]int)
-
 // Device state
 var deviceState = make(map[string]explore.DeviceStruct)
 
-// Function to start the socket
-func startSocket() {
+// SelectMessage struct for socketio
+type SelectMessage struct {
+	PID string `json:"pid"`
+}
+
+// Function to initialize the socket
+func initializeSocket() {
 	// To catch the device selected by the user
-	socket.OnEvent("/", "select_device", func(s socketio.Conn, pID string) bool {
-		l.Info("Device selected by user: ", pID)
-		connectPeripheral(pID)
+	socket.On("select_device", func(c *gosocketio.Channel, msg SelectMessage) bool {
+		l.Info("Device selected by user: ", msg.PID)
+		connectPeripheral(msg.PID)
 		return true
 	})
 
-	/**
-	Ideally, we should be broadcasting to the room, but since that feature is not working
-	for me right now, so using the (wrong)temp method
-
-	Maybe we should use golang-socketio
-	**/
-	socket.OnEvent("/", "get_devices", func(s socketio.Conn) bool {
+	socket.On("get_devices", func(c *gosocketio.Channel) bool {
 		jsonState, _ := json.Marshal(deviceState)
-		s.Emit("devices_list", string(jsonState))
-		return true
-	})
-
-	socket.OnEvent("/", "get_pulse", func(s socketio.Conn) bool {
-		jsonState, _ := json.Marshal(pulseState)
-		s.Emit("heartBeat", string(jsonState))
+		c.Emit("devices_list", string(jsonState))
 		return true
 	})
 }
 
 // Function to start frontend and websocket
 func startServer() {
-	go socket.Serve()
-	defer socket.Close()
-
 	templateDir := pkger.Dir("/bin/template")
 	ob.OpenBrowser("http://localhost" + Port)
 	http.Handle("/", http.FileServer(templateDir))
@@ -106,15 +93,11 @@ func getDevices() {
 
 		deviceState[device.PID] = d
 	}
-
 }
 
 func connectPeripheral(pID string) {
 	l.Info("Trying to connect to ", pID)
 	l.Info("connecting to mibandPulse on port 7002")
-
-	// Reset the value of pulseState
-	pulseState["pulse"] = []int{}
 
 	// create a gRPC stub
 	conn, err := grpc.Dial(":7002", grpc.WithInsecure())
@@ -144,12 +127,12 @@ func connectPeripheral(pID string) {
 
 		l.Info(pulse)
 		p, _ := strconv.Atoi(pulse.Pulse)
-		pulseState["pulse"] = append(pulseState["pulse"], p)
+		socket.BroadcastTo("pulse", "heartBeat", p)
 	}
 }
 
 func main() {
-	startSocket()
+	initializeSocket()
 	getDevices()
 	startServer()
 	select {}
