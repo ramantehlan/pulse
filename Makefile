@@ -40,8 +40,8 @@ tools: ## build the miband library
 	cd $(PWD)/$(miband_dir) && python3 setup.py sdist	 # build the package
 	cd $(PWD)/$(miband_dir) && python3 setup.py build_ext --inplace # Build .so files
 	cd $(PWD)/$(miband_dir) && python3 setup.py bdist_wheel # build .whl file
-	#python3 -m pip install /path
-	# Add clean instruction too
+	# the file name here can be different, so commiting it
+	# python3 -m pip install $(PWD)/$(miband_dir)/dist/
 
 dev: ## Start the development environment
 	  yarn --cwd $(PWD)/$(web_dir) dev &
@@ -59,25 +59,27 @@ pkger: web ## Compile web files using pkger
 # Remove pkger to stop recompiling of web files
 build: pkger ## Build pulse command
 		go build -o $(PWD)/$(cmd_out)/$(app) $(PWD)/$(pulse_dir)
+		go build -o $(PWD)/$(cmd_out)/pulseExplore $(PWD)/$(explore_dir)
 
 install: ## Build and install pulse command
 		go install $(PWD)/$(pulse_dir)
+		go install $(PWD)/$(explore_dir)
 
 uninstall: ## Uninstall the pulse command and package
+		pip uninstall mibandPulse
 
 run: ## Run the project
+		sudo pulseExplore	&
+		mibandPulse &
+		pulse &
 
 clean: ## Remove all the build files
 		rm -rf $(PWD)/$(cmd_out)
 		rm -rf $(PWD)/$(miband_dir)/mibandPulse.egg-info
 		rm -rf $(PWD)/$(miband_dir)/build
 		rm -rf $(PWD)/$(miband_dir)/dist
-
-hard-clean: clean ## Remove all the build files and pre-build files (ie. paker.go)
-		rm -rf $(PWD)/$(pulse_dir)/pkger.go
-		rm -rf $(PWD)/$(web_dir)/node_modules
-		rm -rf $(PWD)/$(web_dir)/.next
-		rm -rf $(PWD)/$(web_dir)/out
 		rm -rf $(PWD)/$(miband_dir)/src/*.c
 		rm -rf $(PWD)/$(miband_dir)/src/*.so
+		rm -rf $(PWD)/$(web_dir)/.next
+		rm -rf $(PWD)/$(web_dir)/out
 

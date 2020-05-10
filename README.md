@@ -157,6 +157,8 @@ If you regenerate the grpc files for python, you might have to manually enter th
 - https://www.cs.swarthmore.edu/~newhall/unixhelp/howto_C_libraries.html
 - https://medium.com/learning-the-go-programming-language/calling-go-functions-from-other-languages-4c7d8bcc69bf
 
+
+<div>Icons made by <a href="https://www.flaticon.com/authors/trinh-ho" title="Trinh Ho">Trinh Ho</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 # License
 
 GPL V3

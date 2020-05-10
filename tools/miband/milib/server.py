@@ -4,7 +4,7 @@ import time
 from concurrent import futures
 from queue import Empty
 import grpc
-from src.lib import MiBand3, UUIDS, QUEUE_TYPES
+from milib.lib import MiBand3, UUIDS, QUEUE_TYPES
 import signal
 import psutil
 
