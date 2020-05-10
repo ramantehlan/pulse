@@ -3,9 +3,7 @@
   <h1 align="center">Pulse</h1>
   <h5 align="center">Simple Heartbeat Monitor</h5>
 
-<img src="https://goreportcard.com/badge/github.com/ramantehlan/pulse">
-<img src="https://img.shields.io/badge/godoc-reference-green">
-<img src="https://img.shields.io/badge/license-MIT-blue">
+<img src="https://goreportcard.com/badge/github.com/ramantehlan/pulse"> <img src="https://img.shields.io/badge/godoc-reference-green"> <img src="https://img.shields.io/badge/license-MIT-blue">
 
 </p>
 
