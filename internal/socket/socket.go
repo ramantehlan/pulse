@@ -1,37 +1,33 @@
 package socket
 
 import (
-	"github.com/googollee/go-socket.io"
+	"github.com/graarh/golang-socketio"
+	"github.com/graarh/golang-socketio/transport"
 	l "github.com/sirupsen/logrus"
 )
 
-// ServerSocket is to get the base instance of a socket server
-func ServeSocket() *socketio.Server {
-	server, err := socketio.NewServer(nil)
-	if err != nil {
-		l.Error(err)
-	}
+// ServeSocket is to get the base instance of a socket server
+func ServeSocket() *gosocketio.Server {
+	server := gosocketio.NewServer(transport.GetDefaultWebsocketTransport())
 
-	server.OnConnect("/", func(s socketio.Conn) error {
+	server.On(gosocketio.OnConnection, func(c *gosocketio.Channel) {
 		l.WithFields(l.Fields{
-			"SID": s.ID(),
-			"URL": s.URL(),
+			"SID": c.Id(),
 		}).Info("New connection")
-		return nil
+
+		c.Join("pulse")
 	})
 
-	server.OnError("/", func(s socketio.Conn, e error) {
+	server.On(gosocketio.OnDisconnection, func(c *gosocketio.Channel) {
+		c.Leave("pulse")
 		l.WithFields(l.Fields{
-			"SID":   s.ID(),
-			"Error": e,
-		}).Error("Error in connection")
+			"SID": c.Id(),
+		}).Info("Connection dropped")
 	})
 
-	server.OnDisconnect("/", func(s socketio.Conn, reason string) {
-		l.WithFields(l.Fields{
-			"SID":    s.ID(),
-			"Reason": reason,
-		}).Warn("Connection lost")
+	//error catching handler
+	server.On(gosocketio.OnError, func(c *gosocketio.Channel) {
+		l.Error("Error in socket connection")
 	})
 
 	return server
