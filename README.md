@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ramantehlan/pulse/master/resources/icons/xxhdpi.png?token=AG5RGAHLG2IXVO66VVVZOQ26XEODA">
+  <img src="https://raw.githubusercontent.com/ramantehlan/pulse/master/resources/icons/logo.png?token=AG5RGAHB4UGKJMSKJ6TSAO26YEBQW" width="100">
   <h1 align="center">Pulse</h1>
 </p>
 Check Pulse In Real Time

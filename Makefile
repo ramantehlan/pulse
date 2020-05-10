@@ -24,32 +24,34 @@ web: ## Build web
 
 grpc: ## Build proto buffer files
 	python3 -m grpc_tools.protoc -Iapi/ \
-		--python_out=$(PWD)/$(miband_dir)/src \
-		--grpc_python_out=$(PWD)/$(miband_dir)/src \
+		--python_out=$(PWD)/$(miband_dir)/milib \
+		--grpc_python_out=$(PWD)/$(miband_dir)/milib \
 		api/mibandDevice.proto
 	protoc -I api/ \
 		-I${GOPATH}/src \
-	  --go_out=plugins=grpc:$(PWD)/$(pulse_dir) \
+	  --go_out=plugins=grpc:$(PWD)/internal/mibandDevice \
 	  api/mibandDevice.proto
 	protoc -I api/ \
 		-I${GOPATH}/src \
-	  --go_out=plugins=grpc:$(PWD)/$(pulse_dir) \
+	  --go_out=plugins=grpc:$(PWD)/internal/exploreDevices \
 	  api/exploreDevices.proto
 
 tools: ## build the miband library
 	cd $(PWD)/$(miband_dir) && python3 setup.py sdist	 # build the package
 	cd $(PWD)/$(miband_dir) && python3 setup.py build_ext --inplace # Build .so files
 	cd $(PWD)/$(miband_dir) && python3 setup.py bdist_wheel # build .whl file
-	# the file name here can be different, so commiting it
-	# python3 -m pip install $(PWD)/$(miband_dir)/dist/
+	python3 -m pip uninstall mibandPulse
+	# the file name here can be different, so change it if it is
+	python3 -m pip install $(PWD)/$(miband_dir)/dist/mibandPulse-0.1-cp38-cp38-linux_x86_64.whl
 
 dev: ## Start the development environment
 	  yarn --cwd $(PWD)/$(web_dir) dev &
+		go run $(PWD)/$(explore_dir)/ &
 		go run $(PWD)/$(pulse_dir)/
 
 # pkger is not working with `pkger -o cmd/pulse` without first running `pkger`.
 # So using this weird logic of running it twice
-pkger: web ## Compile web files using pkger
+pkger: ## Compile web files using pkger
 		rm -f pkged.go
 		rm -f $(PWD)/$(pulse_dir)/pkged.go
 		pkger
@@ -57,7 +59,7 @@ pkger: web ## Compile web files using pkger
 		rm -f pkged.go
 
 # Remove pkger to stop recompiling of web files
-build: pkger ## Build pulse command
+build: web pkger ## Build pulse command
 		go build -o $(PWD)/$(cmd_out)/$(app) $(PWD)/$(pulse_dir)
 		go build -o $(PWD)/$(cmd_out)/pulseExplore $(PWD)/$(explore_dir)
 

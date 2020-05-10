@@ -1,5 +1,3 @@
-pkged.go
-cmd/pulse/pkged.go
 web/out
 web/.next
 bin

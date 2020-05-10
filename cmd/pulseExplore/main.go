@@ -17,7 +17,7 @@ const (
 	// Port for the client server.
 	Port = 7004
 	// SearchTime is the time limit to search devices for
-	SearchTime = 5
+	SearchTime = 8
 )
 
 // create a server instance

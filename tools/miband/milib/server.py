@@ -9,8 +9,8 @@ import signal
 import psutil
 
 # Generated classes
-import src.mibandDevice_pb2 as mi_pb2
-import src.mibandDevice_pb2_grpc as mi_pb2_grpc
+import milib.mibandDevice_pb2 as mi_pb2
+import milib.mibandDevice_pb2_grpc as mi_pb2_grpc
 
 # State of device
 isDeviceActive = False
