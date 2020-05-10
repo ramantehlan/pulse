@@ -4,8 +4,8 @@ web/out
 web/.next
 bin
 tools/miband/mibandPulse.egg-info
-tools/miband/src/*.c
-tools/miband/src/*.so
+tools/miband/milib/*.c
+tools/miband/milib/*.so
 
 # Binaries for programs and plugins
 *.exe
