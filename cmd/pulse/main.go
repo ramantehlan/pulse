@@ -6,10 +6,12 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/graarh/golang-socketio"
 	"github.com/markbates/pkger"
 	explore "github.com/ramantehlan/pulse/internal/exploreDevices"
+	miPulse "github.com/ramantehlan/pulse/internal/mibandDevice"
 	ob "github.com/ramantehlan/pulse/internal/openBrowser"
 	s "github.com/ramantehlan/pulse/internal/socket"
 	l "github.com/sirupsen/logrus"
@@ -102,17 +104,18 @@ func connectPeripheral(pID string) {
 	// create a gRPC stub
 	conn, err := grpc.Dial(":7002", grpc.WithInsecure())
 	if err != nil {
-		l.Error(err)
+		l.Error("Error in gRPC dial :7002 > ", err)
 	}
 	defer conn.Close()
-	device := NewMibandDeviceClient(conn)
-	deviceUUID := &DeviceUUID{
+	l.Info("Successfully connected to mibandPulse gRPC on 7002 :)")
+	device := miPulse.NewMibandDeviceClient(conn)
+	deviceUUID := &miPulse.DeviceUUID{
 		UUID: pID,
 	}
 
 	response, err := device.GetHeartBeats(context.Background(), deviceUUID)
 	if err != nil {
-		l.Error(err)
+		l.Error("Error in calling GetHeartBeats > ", err)
 	}
 	// Fetch stream and broadcast it to the socket
 	for {
@@ -133,6 +136,8 @@ func connectPeripheral(pID string) {
 
 func main() {
 	initializeSocket()
+	l.Info("Server Starting in 5 seonds | Waiting for pulseExplore to find devices")
+	time.Sleep(5 * time.Second)
 	getDevices()
 	startServer()
 	select {}

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package main;
+
 
 // DeviceUUID is the strucutre of the incoming message
 message DeviceUUID {
