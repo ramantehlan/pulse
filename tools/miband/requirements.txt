@@ -1,0 +1,7 @@
+grpc
+crypto
+bluepy
+crc16
+logging
+setuptools
+Cython
