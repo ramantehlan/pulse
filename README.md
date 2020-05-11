@@ -23,7 +23,9 @@
 
 >  This readme only contains the technical details about the project; the journal for this project can be found here with more information on design decisions, applications etc.
 
-<img src="./resources/demo_gif.gif" align="center">
+<img src="./resources/demo.png" align="center">
+
+See the demo gif [here](https://raw.githubusercontent.com/ramantehlan/pulse/master/resources/demo_gif.gif?token=AG5RGAC75A24XHABHHBWK4C6YJNKC).
 
 # Index
 
