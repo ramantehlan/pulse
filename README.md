@@ -15,14 +15,15 @@
  <a>
     <img src="https://img.shields.io/badge/license-MIT-blue" align="center">
  </a>
-  
+
 </p>
-  
+
 
 **Pulse is a heartbeat monitor; it connects with your smart band and fetches your pulse in real-time to display it on a dashboard**. It currently supports MiBand 2 and 3, but support for more devices can be added.
 
->  This readme only contains the technical details about the project; the journal for this project can be found here with more information on design decisions, applications etc. 
+>  This readme only contains the technical details about the project; the journal for this project can be found here with more information on design decisions, applications etc.
 
+<img src="./resources/demo_gif.gif" align="center">
 
 # Index
 
@@ -42,22 +43,22 @@
 There are 3 main services:
 
 1. pulse
-2. pulseExplore
+2. pulseExplorer
 3. mibandPulse
 
 ### pulse
 
-This service act as a stub for other services and as a server for the users. **It serves the frontend which is compiled with its binary using [pkger](https://github.com/markbates/pkger)**. It starts with after the pulseExplore service and waits for 5 seconds before starting, to allow pulseExplore to fetch devices, and after that, it fetches the list of Bluetooth devices and stores them in a state to send it to frontend when requested. Once the user requests to connect their band, the request is sent to mibandPulse as that is the only device currently supported. Then mibandPulse connects to that device and **streams real-time heartbeats to pulse**.
+This service act as a stub for other services and as a server for the users. **It serves the frontend which is compiled with its binary using [pkger](https://github.com/markbates/pkger)**. It starts with after the pulseExplorer service and waits for 5 seconds before starting, to allow pulseExplorer to fetch devices, and after that, it fetches the list of Bluetooth devices and stores them in a state to send it to frontend when requested. Once the user requests to connect their band, the request is sent to mibandPulse as that is the only device currently supported. Then mibandPulse connects to that device and **streams real-time heartbeats to pulse**.
 
 > If you want to know why it is designed this way, you might want to check out this blog.
 
 
-### pulseExplore
+### pulseExplorer
 
-pulseExplore use [bettercap/gatt](https://github.com/bettercap/gatt)(Fork of paypal/gatt package), which is designed to be embedded and required Sudo access. It only runs for 8 seconds and scans all the devices in the area and stream them via gRPC server.
+pulseExplorer use [bettercap/gatt](https://github.com/bettercap/gatt)(Fork of paypal/gatt package), which is designed to be embedded and required Sudo access. It only runs for 8 seconds and scans all the devices in the area and stream them via gRPC server.
 
 ### mibandPulse
-mibandPulse use [yogeshojha/MiBand3](https://github.com/yogeshojha/MiBand3) package to connect to MiBand and stream them to pulse using [gRPC](https://grpc.io/). It is converted into shared objects(so) file using [Cython](https://cython.org/) to optimise the speed. 
+mibandPulse use [yogeshojha/MiBand3](https://github.com/yogeshojha/MiBand3) package to connect to MiBand and stream them to pulse using [gRPC](https://grpc.io/). It is converted into shared objects(so) file using [Cython](https://cython.org/) to optimise the speed.
 
 
 <p align="center">
@@ -112,7 +113,7 @@ The file structure of this project follows the [conventional standard](https://g
  Folder/File Name | Description
 ------------------|------------
 /api | Protocol Definition.
-/cmd | Main applications for this project. Home for `pulse` and `pulseExplore` services.
+/cmd | Main applications for this project. Home for `pulse` and `pulseExplorer` services.
 /internal | Private application code, it doesn't exported by Go. See [release note](https://golang.org/doc/go1.4#internalpackages). Contains gRPC generated and other files.
 /resources | Resources used for readme or public.
 /tools | Supporting tools for this project. Holds `mibandPulse` service.
@@ -123,12 +124,12 @@ The file structure of this project follows the [conventional standard](https://g
 
 
 ```sh
-build                          Build pulse and pulseExplore command
+build                          Build pulse and pulseExplorer command
 clean                          Remove all the build files
 dev                            Start the development environment to test
 grpc                           Build files based on api proto files
 help                           Display help screen
-install                        Build and install pulse pulseExplore command
+install                        Build and install pulse pulseExplorer command
 pkger                          Compile web files in a package using pkger
 run                            Run the project
 setup                          Setup dev environment
@@ -151,7 +152,7 @@ web                            Build web files
 
 # FAQ
 
-##### Q.) I want to use this project for a commercial purpose? 
+##### Q.) I want to use this project for a commercial purpose?
 Great! Yes, you can! :tada: However, it will be appreciated that you reach out to the author and let him know. It will be nice to see it being applied in the real world, and maybe the author can decide to get involved with your endeavours.
 
 ##### Q.) I want to know how and why this project was created?
@@ -196,5 +197,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-

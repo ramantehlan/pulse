@@ -4,7 +4,7 @@ SHELL = /bin/sh
 PWD = $(shell pwd)
 app = pulse
 pulse_dir = cmd/pulse
-explore_dir = cmd/pulseExplore
+explore_dir = cmd/pulseExplorer
 web_dir = web
 cmd_out = bin
 web_out = bin/template
@@ -62,7 +62,7 @@ pkger: ## Compile web files using pkger
 # Remove pkger to stop recompiling of web files
 build: web pkger ## Build pulse command
 		go build -o $(PWD)/$(cmd_out)/$(app) $(PWD)/$(pulse_dir)
-		go build -o $(PWD)/$(cmd_out)/pulseExplore $(PWD)/$(explore_dir)
+		go build -o $(PWD)/$(cmd_out)/pulseExplorer $(PWD)/$(explore_dir)
 
 install: ## Build and install pulse command
 		go install $(PWD)/$(pulse_dir)
@@ -72,7 +72,7 @@ uninstall: ## Uninstall the pulse command and package
 		pip uninstall mibandPulse
 
 run: Install ## Run the project
-		sudo pulseExplore	&
+		sudo pulseExplorer	&
 		mibandPulse &
 		pulse &
 
