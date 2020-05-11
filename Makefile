@@ -18,6 +18,7 @@ help: ## Display help screen
 setup: ## Setup dev environment
 		yarn --cwd $(PWD)/$(web_dir) install
 		python3 -m pip install -r $(PWD)/$(miband_dir)/requirements.txt
+		go get ./...
 
 web: ## Build web
 		yarn --cwd $(PWD)/$(web_dir) export -o $(PWD)/$(web_out)
@@ -70,7 +71,7 @@ install: ## Build and install pulse command
 uninstall: ## Uninstall the pulse command and package
 		pip uninstall mibandPulse
 
-run: ## Run the project
+run: Install ## Run the project
 		sudo pulseExplore	&
 		mibandPulse &
 		pulse &
@@ -84,4 +85,3 @@ clean: ## Remove all the build files
 		rm -rf $(PWD)/$(miband_dir)/src/*.so
 		rm -rf $(PWD)/$(web_dir)/.next
 		rm -rf $(PWD)/$(web_dir)/out
-

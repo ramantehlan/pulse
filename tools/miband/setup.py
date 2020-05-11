@@ -1,13 +1,12 @@
 # coding: utf-8
 import os
-import fnmatch
 import sysconfig
 from setuptools import setup, find_packages
 from setuptools.command.build_py import build_py as _build_py
 from Cython.Build import cythonize
 
 
-def getPaths(root_dir, exclude_files = []):
+def getPaths(root_dir, exclude_files=[]):
     """get filepaths for compilation"""
     paths = []
     for root, dirs, files in os.walk(root_dir):
@@ -36,16 +35,15 @@ class build_py(_build_py):
         return filtered_modules
 
 
-
 setup(
-    name = "mibandPulse",
-    version = "0.1",
-    scripts = ['mibandPulse'],
-    description = "A client to connect to the Miband and fetch the information and send it to pulse server",
-    url = "https://github.com/ramantehlan/pulse",
+    name="mibandPulse",
+    version="0.1",
+    scripts=['milib/mibandPulse'],
+    description="A client to connect to the Miband and fetch the information and send it to pulse server",
+    url="https://github.com/ramantehlan/pulse",
     packages=find_packages(),
     ext_modules=cythonize(
-        getPaths('milib'),
+        getPaths('milib', ['milib/mibandPulse']),
         compiler_directives={'language_level': 3}
     ),
     cmdclass={
